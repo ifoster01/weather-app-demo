@@ -189,6 +189,13 @@ export function WeatherCard({
           </div>
         </div>
         <WeatherChart hours={dayData?.hours} />
+        <div className="text-center text-small-mobile md:text-small font-semibold text-gray-600">
+          {selectedTimeOfDayIndex === 0
+            ? 'MORNING'
+            : selectedTimeOfDayIndex === 1
+              ? 'AFTERNOON'
+              : 'EVENING'}
+        </div>
       </div>
     </div>
   );
