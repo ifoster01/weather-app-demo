@@ -10,8 +10,10 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   Tooltip,
+  Text,
 } from 'recharts';
 import { HourlyData } from '@/lib/types';
+import { useWeatherStore } from '@/lib/store';
 
 interface WeatherChartProps {
   hours?: HourlyData[];
@@ -30,32 +32,119 @@ interface CustomTooltipProps {
   label?: string;
 }
 
+interface HourDef {
+  start: number;
+  end: number;
+  spansMidnight: boolean;
+}
+
+interface TimeSlotConfig {
+  main: HourDef;
+  buffer: HourDef;
+}
+
+interface TickPayload {
+  coordinate: number;
+  value: string;
+  index: number;
+  offset: number;
+  tickCoord: number;
+  isShow: boolean;
+}
+
+interface CustomXAxisTickProps {
+  textAnchor: string;
+  verticalAnchor: string;
+  orientation: string;
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+  className: string;
+  stroke: string;
+  fill: string;
+  index: number;
+  payload: TickPayload;
+  visibleTicksCount: number;
+}
+
+const timeSlotConfigs: Record<number, TimeSlotConfig> = {
+  0: {
+    main:   { start: 8,  end: 12, spansMidnight: false },
+    buffer: { start: 6,  end: 14, spansMidnight: false },
+  },
+  1: {
+    main:   { start: 13, end: 17, spansMidnight: false },
+    buffer: { start: 11, end: 19, spansMidnight: false },
+  },
+  2: {
+    main:   { start: 17, end: 21, spansMidnight: false },
+    buffer: { start: 15, end: 23, spansMidnight: false },
+  }
+};
+
+const isHourInDef = (hourNum: number, def: HourDef): boolean => {
+  if (def.spansMidnight) {
+    return hourNum >= def.start || hourNum <= def.end;
+  }
+  return hourNum >= def.start && hourNum <= def.end;
+};
+
+const formatHourToChartTime = (hourNum24: number): string => {
+  const date = new Date(2000, 0, 1, hourNum24, 0, 0);
+  return date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+};
+
 export function WeatherChart({ hours }: WeatherChartProps) {
-  // Transform weather API data for the chart
+  const { selectedTimeOfDayIndex } = useWeatherStore();
+
   const chartData = React.useMemo(() => {
     if (!hours) return [];
 
-    return hours.map((hour: HourlyData) => {
-      // Extract hour from datetime (e.g., "14:00:00" -> "2:00 PM")
-      const time = new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        hour12: true
-      });
-
-      return {
-        time,
+    const currentTargetSlot = timeSlotConfigs[selectedTimeOfDayIndex];
+    if (!currentTargetSlot) {
+      return hours.map((hour: HourlyData) => ({
+        time: new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
         temperature: Math.round(hour.temp),
         humidity: Math.round(hour.humidity),
-        pressure: Math.round(hour.pressure - 1000), // Normalize pressure for better visualization
+        pressure: Math.round(hour.pressure - 1000),
         precipProb: Math.round(hour.precipprob),
         uvIndex: hour.uvindex,
         cloudCover: Math.round(hour.cloudcover),
         originalHour: hour.datetime,
+        isBufferZoneOnly: false,
+      }));
+    }
+
+    const { buffer: bufferRange, main: mainRange } = currentTargetSlot;
+
+    const filteredHours = hours.filter(hour => {
+      const hourNum = parseInt(hour.datetime.substring(0, 2), 10);
+      return isHourInDef(hourNum, bufferRange);
+    });
+
+    return filteredHours.map((hour: HourlyData) => {
+      const time = new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true
+      });
+      const hourNum = parseInt(hour.datetime.substring(0, 2), 10);
+      const isMain = isHourInDef(hourNum, mainRange);
+      
+      return {
+        time,
+        temperature: Math.round(hour.temp),
+        humidity: Math.round(hour.humidity),
+        pressure: Math.round(hour.pressure - 1000),
+        precipProb: Math.round(hour.precipprob),
+        uvIndex: hour.uvindex,
+        cloudCover: Math.round(hour.cloudcover),
+        originalHour: hour.datetime,
+        isBufferZoneOnly: !isMain,
       };
     });
-  }, [hours]);
+  }, [hours, selectedTimeOfDayIndex]);
 
-  // Custom tooltip
   const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
@@ -70,6 +159,31 @@ export function WeatherChart({ hours }: WeatherChartProps) {
       );
     }
     return null;
+  };
+
+  const CustomXAxisTick = (props: CustomXAxisTickProps) => {
+    const { x, y, payload } = props;
+    
+    const calculateIsBufferOnly = (value: string) => {
+      // convert value from am/pm to 24 hr time
+      let hour = parseInt(value.substring(0, 2), 10);
+      const isPM = value.includes('PM');
+      if (isPM) {
+        hour += 12;
+      }
+      const currentTargetSlot = timeSlotConfigs[selectedTimeOfDayIndex];
+      const { main: mainRange } = currentTargetSlot;
+      return !isHourInDef(hour, mainRange);
+    };
+    const isBufferOnly = calculateIsBufferOnly(payload.value);
+
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <Text x={0} y={0} dy={16} textAnchor="middle" fontSize={12} fill={isBufferOnly ? 'gray' : 'black'}>
+          {payload.value}
+        </Text>
+      </g>
+    );
   };
 
   const getUnit = (dataKey: string) => {
@@ -92,10 +206,15 @@ export function WeatherChart({ hours }: WeatherChartProps) {
     );
   }
 
-  const currentTime = new Date().toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    hour12: true
-  });
+  let refLineXStart = '';
+  let refLineXEnd = '';
+  const currentTargetSlot = timeSlotConfigs[selectedTimeOfDayIndex];
+
+  if (currentTargetSlot && chartData.length > 0) {
+    const { main: mainRange } = currentTargetSlot;
+    refLineXStart = formatHourToChartTime(mainRange.start);
+    refLineXEnd = formatHourToChartTime((mainRange.end) % 24);
+  }
 
   return (
     <div className="w-full h-80">
@@ -110,7 +229,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
             dataKey="time"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 12, fill: '#9ca3af' }}
+            tick={CustomXAxisTick}
             interval="preserveStartEnd"
           />
 
@@ -118,15 +237,23 @@ export function WeatherChart({ hours }: WeatherChartProps) {
 
           <Tooltip content={<CustomTooltip />} />
 
-          {/* Reference line for current time */}
-          <ReferenceLine
-            x={currentTime}
-            stroke="#10b981"
-            strokeWidth={2}
-            strokeDasharray="2 2"
-          />
+          {refLineXStart && chartData.some(d => d.time === refLineXStart) && (
+            <ReferenceLine 
+              x={refLineXStart} 
+              stroke="black" 
+              strokeDasharray="3 3" 
+              strokeWidth={2} 
+            />
+          )}
+          {refLineXEnd && chartData.some(d => d.time === refLineXEnd) && (
+            <ReferenceLine 
+              x={refLineXEnd} 
+              stroke="black" 
+              strokeDasharray="3 3" 
+              strokeWidth={2} 
+            />
+          )}
 
-          {/* Temperature line - Red */}
           <Line
             type="monotone"
             dataKey="temperature"
@@ -137,7 +264,6 @@ export function WeatherChart({ hours }: WeatherChartProps) {
             name="Temperature"
           />
 
-          {/* Humidity line - Green */}
           <Line
             type="monotone"
             dataKey="humidity"
@@ -148,7 +274,6 @@ export function WeatherChart({ hours }: WeatherChartProps) {
             name="Humidity"
           />
 
-          {/* Precipitation Probability line - Blue */}
           <Line
             type="monotone"
             dataKey="precipProb"

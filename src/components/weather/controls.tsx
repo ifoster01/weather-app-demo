@@ -26,8 +26,7 @@ const weekdays = [
 const timeOfDay = [
   { value: 0, label: 'Morning' },
   { value: 1, label: 'Afternoon' },
-  { value: 2, label: 'Evening' },
-  { value: 3, label: 'Night' },
+  { value: 2, label: 'Evening' }
 ];
 
 export function WeatherControls() {
