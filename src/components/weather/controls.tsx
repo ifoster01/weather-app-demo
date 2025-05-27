@@ -12,30 +12,28 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useWeatherStore } from '@/lib/store';
-import { Button } from '../ui/button';
-import useWeatherData from '@/lib/hooks/useWeatherData';
+
+const weekdays = [
+  { value: 0, label: 'Sunday' },
+  { value: 1, label: 'Monday' },
+  { value: 2, label: 'Tuesday' },
+  { value: 3, label: 'Wednesday' },
+  { value: 4, label: 'Thursday' },
+  { value: 5, label: 'Friday' },
+  { value: 6, label: 'Saturday' },
+];
 
 export function WeatherControls() {
   const {
-    location,
-    selectedDay,
-    selectedPeriod,
-    setLocation,
-    setSelectedDay,
-    setSelectedPeriod,
+    locationName,
+    selectedDayIndex,
+    setLocationAndCoordinates,
+    setSelectedDayIndex,
   } = useWeatherStore();
   
-  const [searchInput, setSearchInput] = useState(location || '');
-  const [searchCoordinates, setSearchCoordinates] = useState({
-    lat: 37.7597,
-    lng: -122.4281,
-  });
+  const [searchInput, setSearchInput] = useState(locationName || '');
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-  
-  const { data, isLoading, error } = useWeatherData(searchCoordinates.lat, searchCoordinates.lng);
-  console.log(data);
-
 
   const libraries: Libraries = ['places'];
 
@@ -45,55 +43,35 @@ export function WeatherControls() {
   });
 
   useEffect(() => {
-    setSearchInput(location || '');
-  }, [location]);
+    setSearchInput(locationName || '');
+  }, [locationName]);
 
   const handlePlaceChanged = useCallback(() => {
     if (!autocompleteRef.current) return;
-
     const place = autocompleteRef.current.getPlace();
-
-    if (
-      !place ||
-      !place.geometry ||
-      !place.formatted_address ||
-      !place.geometry.location
-    ) {
+    if (!place?.geometry?.location || !place.formatted_address) {
       console.log('No valid place selected/place object invalid');
       return;
     }
-
     const lat = place.geometry.location.lat();
     const lng = place.geometry.location.lng();
-    setSearchCoordinates({ lat, lng });
-    setLocation(place.formatted_address);
+    setLocationAndCoordinates(place.formatted_address, lat, lng); // Global store update
     setSearchInput(place.formatted_address);
-  }, [setLocation, setSearchCoordinates]);
+  }, [setLocationAndCoordinates]);
 
   useEffect(() => {
     if (!isLoaded || loadError || !inputRef.current) return;
-
     const options: google.maps.places.AutocompleteOptions = {
       componentRestrictions: { country: 'us' },
       fields: ['formatted_address', 'geometry', 'name'],
-      types: ['establishment', 'geocode'],
+      types: ['geocode'], // Geocode is generally better for cities/addresses
     };
-
     if (!autocompleteRef.current) {
-      autocompleteRef.current = new google.maps.places.Autocomplete(
-        inputRef.current,
-        options
-      );
+      autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, options);
     }
-    const listener = autocompleteRef.current.addListener(
-      'place_changed',
-      handlePlaceChanged
-    );
-
+    const listener = autocompleteRef.current.addListener('place_changed', handlePlaceChanged);
     return () => {
-      if (google && google.maps && google.maps.event && listener) {
-        google.maps.event.removeListener(listener);
-      }
+      if (google?.maps?.event && listener) google.maps.event.removeListener(listener);
     };
   }, [isLoaded, loadError, handlePlaceChanged]);
 
@@ -102,8 +80,7 @@ export function WeatherControls() {
   };
 
   return (
-    <div className="flex items-center justify-between mb-8">
-      {/* Location Selector - Always an Input now */}
+    <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4 sm:gap-0">
       <div className="flex items-center gap-3">
         <div className="relative">
           <MapPin className="w-5 h-5 text-gray-600 absolute left-2 top-1/2 -translate-y-1/2" />
@@ -111,51 +88,26 @@ export function WeatherControls() {
             ref={inputRef}
             value={searchInput}
             onChange={handleSearchInputChange}
-            placeholder="Search for a location..."
+            placeholder="Search location..."
             className="w-64 text-lg font-medium pl-8"
-            onFocus={() => {
-              if (
-                searchInput === 'No valid place selected/place object invalid'
-              )
-                setSearchInput('');
-            }}
+            disabled={!isLoaded}
           />
         </div>
       </div>
 
-      {/* Day and Time Selectors */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <Clock className="w-4 h-4 text-gray-500" />
-          <Select value={selectedDay} onValueChange={setSelectedDay}>
-            <SelectTrigger className="w-36 border-none shadow-none bg-transparent">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Monday">Monday</SelectItem>
-              <SelectItem value="Tuesday">Tuesday</SelectItem>
-              <SelectItem value="Wednesday">Wednesday</SelectItem>
-              <SelectItem value="Thursday">Thursday</SelectItem>
-              <SelectItem value="Friday">Friday</SelectItem>
-              <SelectItem value="Saturday">Saturday</SelectItem>
-              <SelectItem value="Sunday">Sunday</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Select
-          value={selectedPeriod}
-          onValueChange={value =>
-            setSelectedPeriod(value as 'morning' | 'afternoon' | 'evening')
-          }
+      <div className="flex items-center gap-2">
+        <Clock className="w-4 h-4 text-gray-500" />
+        <Select 
+          value={selectedDayIndex.toString()} 
+          onValueChange={(value) => setSelectedDayIndex(parseInt(value, 10))}
         >
-          <SelectTrigger className="w-32 border-none shadow-none bg-transparent">
-            <SelectValue />
+          <SelectTrigger className="w-40 border-none shadow-none bg-transparent">
+            <SelectValue placeholder="Select a day" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="morning">Morning</SelectItem>
-            <SelectItem value="afternoon">Afternoon</SelectItem>
-            <SelectItem value="evening">Evening</SelectItem>
+            {weekdays.map(day => (
+              <SelectItem key={day.value} value={day.value.toString()}>{day.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
