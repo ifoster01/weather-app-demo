@@ -88,29 +88,26 @@ export function WeatherControls() {
   };
 
   return (
-    <div className="w-4/5 mx-auto flex flex-col sm:flex-row items-center justify-around mb-8 gap-4 sm:gap-0">
-      <div className="w-1/2 flex items-center justify-center gap-3 relative">
-        <MapPin className="w-8 h-8 absolute left-2 top-1/2 -translate-y-1/2" />
+    <div className="w-full md:w-4/5 mx-auto flex flex-col sm:flex-row items-center justify-around mb-8 gap-4 sm:gap-0">
+      <div className="w-full sm:w-1/2 flex items-center justify-center gap-3 relative">
+        <MapPin className="w-6 h-6 sm:w-8 sm:h-8 absolute left-2 top-1/2 -translate-y-1/2" />
         <Input
           ref={inputRef}
           value={searchInput}
           onChange={handleSearchInputChange}
           placeholder="Search location..."
-          className="w-full font-medium pl-12 border-none shadow-none"
-          style={{
-            fontSize: '1.5rem',
-          }}
+          className="block w-full font-medium pl-10 sm:pl-12 border-none shadow-none text-lg md:text-2xl"
           disabled={!isLoaded}
         />
       </div>
 
-      <div className="flex items-center justify-center gap-2 w-1/2">
-        <Clock className="w-6 h-6 text-black" />
+      <div className="flex items-center justify-center gap-2 w-full sm:w-1/2">
+        <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
         <Select 
           value={selectedDayIndex.toString()} 
           onValueChange={(value) => setSelectedDayIndex(parseInt(value, 10))}
         >
-          <SelectTrigger className="min-w-fit text-black border-none shadow-none bg-transparent text-xl">
+          <SelectTrigger className="min-w-fit text-black border-none shadow-none bg-transparent text-base sm:text-lg md:text-xl">
             Every
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
@@ -124,7 +121,7 @@ export function WeatherControls() {
           value={selectedTimeOfDayIndex.toString()}
           onValueChange={(value) => setSelectedTimeOfDayIndex(parseInt(value, 10))}
         >
-          <SelectTrigger className="border-none shadow-none bg-transparent min-w-fit text-xl">
+          <SelectTrigger className="border-none shadow-none bg-transparent min-w-fit text-base sm:text-lg md:text-xl">
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
           <SelectContent>

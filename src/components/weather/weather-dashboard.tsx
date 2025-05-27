@@ -13,6 +13,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"; // Added Shadcn Carousel imports
 import { Separator } from '../ui/separator';
+import { Button } from '../ui/button';
+import { ChevronLeft } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export function WeatherDashboard() {
   const { latitude, longitude, selectedDayIndex, incrementDayIndex, decrementDayIndex } = useWeatherStore(); // Added selectedDayIndex and its modifiers
@@ -62,7 +65,7 @@ export function WeatherDashboard() {
 
   return (
     <div className="min-h-screen max-w-screen p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <WeatherControls />
 
         <Separator className="my-8 bg-black" />
@@ -98,9 +101,19 @@ export function WeatherDashboard() {
                  </CarouselItem>
               ) : null}
             </CarouselContent>
-            <CarouselPrevious onClick={decrementDayIndex} disabled={selectedDayIndex === 0} />
-            <CarouselNext onClick={incrementDayIndex} disabled={selectedDayIndex === 6} />
+            <CarouselPrevious className='hidden lg:flex' onClick={decrementDayIndex} disabled={selectedDayIndex === 0} />
+            <CarouselNext className='hidden lg:flex' onClick={incrementDayIndex} disabled={selectedDayIndex === 6} />
           </Carousel>
+          <div className='lg:hidden flex justify-center mt-4 gap-2'>
+            <Button variant="ghost" onClick={decrementDayIndex} disabled={selectedDayIndex === 0}>
+              <ChevronLeft className='w-4 h-4' />
+              Previous
+            </Button>
+            <Button variant="ghost" onClick={incrementDayIndex} disabled={selectedDayIndex === 6}>
+              Next
+              <ChevronRight className='w-4 h-4' />
+            </Button>
+          </div>
         </div>
         
         {/* Fallback display if no primary data, in case carousel structure above doesn't render it */}
