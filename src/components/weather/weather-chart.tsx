@@ -114,6 +114,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
         precipProb: Math.round(hour.precipprob),
         uvIndex: hour.uvindex,
         cloudCover: Math.round(hour.cloudcover),
+        humidity: Math.round(hour.humidity),
         originalHour: hour.datetime,
         isBufferZoneOnly: false,
       }));
@@ -145,6 +146,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
         precipProb: Math.round(hour.precipprob),
         uvIndex: hour.uvindex,
         cloudCover: Math.round(hour.cloudcover),
+        humidity: Math.round(hour.humidity),
         originalHour: hour.datetime,
         isBufferZoneOnly: !isMain,
       };
@@ -213,6 +215,8 @@ export function WeatherChart({ hours }: WeatherChartProps) {
       case 'uvIndex':
         return '';
       case 'cloudCover':
+        return '%';
+      case 'humidity':
         return '%';
       default:
         return '';
@@ -303,6 +307,16 @@ export function WeatherChart({ hours }: WeatherChartProps) {
             dot={false}
             activeDot={{ r: 4, fill: 'oklch(62.3% 0.214 259.815)' }}
             name="Precipitation Probability"
+          />
+
+          <Line
+            type="monotone"
+            dataKey="humidity"
+            stroke="orange"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, fill: 'orange' }}
+            name="Humidity"
           />
         </LineChart>
       </ResponsiveContainer>
