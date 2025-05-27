@@ -16,13 +16,14 @@ import {
 } from 'lucide-react';
 import { DayData, HourlyData } from '@/lib/types';
 import { WeatherChart } from './weather-chart';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { isThisWeek, subDays } from 'date-fns';
 import { useWeatherStore } from '@/lib/store';
+import { WeatherCardSkeleton } from './weather-card-skeleton';
 
 interface WeatherCardProps {
-  dayData: DayData;
+  dayData?: DayData;
   isPrimaryCard: boolean;
+  isLoading?: boolean;
 }
 
 const getOrdinalSuffix = (day: number): string => {
@@ -39,8 +40,16 @@ const getOrdinalSuffix = (day: number): string => {
   }
 };
 
-export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
+export function WeatherCard({
+  dayData,
+  isPrimaryCard,
+  isLoading,
+}: WeatherCardProps) {
   const { selectedTimeOfDayIndex } = useWeatherStore();
+
+  if (!dayData || isLoading) {
+    return <WeatherCardSkeleton />;
+  }
 
   const getWeatherIcon = (
     iconString: string | undefined,
@@ -145,13 +154,15 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
   const cardTitleColor = isPrimaryCard ? 'text-red-500' : 'text-gray-900';
 
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="text-center pt-4">
-        <CardTitle className={`text-header-mobile md:text-header font-bold ${cardTitleColor}`}>
+    <div className="flex flex-col">
+      <div className="text-center pt-4">
+        <h1
+          className={`text-header-mobile md:text-header font-bold ${cardTitleColor}`}
+        >
           {dayLabel}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+        </h1>
+      </div>
+      <div className="p-4 sm:p-6 pt-0 sm:pt-0">
         <div className="w-full justify-center flex flex-row items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
           <div className="flex-shrink-0">
             {getWeatherIcon(dayData.icon, dayData.datetimeEpoch, true)}
@@ -178,7 +189,7 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
           </div>
         </div>
         <WeatherChart hours={dayData?.hours} />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

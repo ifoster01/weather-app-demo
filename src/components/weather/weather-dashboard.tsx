@@ -15,6 +15,7 @@ import {
 import { Button } from '../ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
+import { WeatherCardSkeleton } from './weather-card-skeleton';
 
 export function WeatherDashboard() {
   const {
@@ -31,15 +32,6 @@ export function WeatherDashboard() {
     return (
       <div className="min-h-screen p-6 flex items-center justify-center">
         <div>Loading location data from store...</div>
-      </div>
-    );
-  }
-
-  // Loading state from the useWeatherData hook
-  if (isLoading) {
-    return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
-        <div>Loading weather data...</div>
       </div>
     );
   }
@@ -91,17 +83,22 @@ export function WeatherDashboard() {
           <Carousel
             opts={{
               align: 'start',
-              loop: false, // We handle loop prevention via store actions
+              loop: false,
             }}
             className="w-full"
           >
             <CarouselContent>
-              {/* We will display one primary card, controlled by selectedDayIndex */}
               {primaryDayData ? (
                 <CarouselItem className="w-full md:basis-1/2">
-                  {' '}
-                  {/* Ensure it takes up appropriate space */}
-                  <WeatherCard dayData={primaryDayData} isPrimaryCard={true} />
+                  <WeatherCard
+                    dayData={primaryDayData}
+                    isPrimaryCard={true}
+                    isLoading={isLoading}
+                  />
+                </CarouselItem>
+              ) : isLoading ? (
+                <CarouselItem className="w-full md:basis-1/2">
+                  <WeatherCardSkeleton />
                 </CarouselItem>
               ) : (
                 <CarouselItem className="w-full md:basis-1/2">
@@ -110,15 +107,19 @@ export function WeatherDashboard() {
                   </div>
                 </CarouselItem>
               )}
-              {/* Optionally, you could show more cards here if needed, but the request focuses on one primary card changing */}
               {secondaryDayData &&
               primaryDayData?.datetimeEpoch !==
-                secondaryDayData.datetimeEpoch ? ( // Only show if different from primary
+                secondaryDayData.datetimeEpoch ? (
                 <CarouselItem className="w-full md:basis-1/2">
                   <WeatherCard
                     dayData={secondaryDayData}
                     isPrimaryCard={false}
+                    isLoading={isLoading}
                   />
+                </CarouselItem>
+              ) : isLoading ? (
+                <CarouselItem className="w-full md:basis-1/2">
+                  <WeatherCardSkeleton />
                 </CarouselItem>
               ) : !secondaryDayData ? (
                 <CarouselItem className="w-full md:basis-1/2">
