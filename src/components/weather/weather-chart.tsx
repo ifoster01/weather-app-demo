@@ -106,7 +106,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
       return hours.map((hour: HourlyData) => ({
         time: new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
         temperature: Math.round(hour.temp),
-        humidity: Math.round(hour.humidity),
+        windSpeed: Math.round(hour.windspeed),
         pressure: Math.round(hour.pressure - 1000),
         precipProb: Math.round(hour.precipprob),
         uvIndex: hour.uvindex,
@@ -134,7 +134,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
       return {
         time,
         temperature: Math.round(hour.temp),
-        humidity: Math.round(hour.humidity),
+        windSpeed: Math.round(hour.windspeed),
         pressure: Math.round(hour.pressure - 1000),
         precipProb: Math.round(hour.precipprob),
         uvIndex: hour.uvindex,
@@ -189,7 +189,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
   const getUnit = (dataKey: string) => {
     switch (dataKey) {
       case 'temperature': return '°F';
-      case 'humidity': return '%';
+      case 'windSpeed': return ' mph';
       case 'pressure': return ' hPa';
       case 'precipProb': return '%';
       case 'uvIndex': return '';
@@ -266,12 +266,12 @@ export function WeatherChart({ hours }: WeatherChartProps) {
 
           <Line
             type="monotone"
-            dataKey="humidity"
-            stroke="#10b981"
+            dataKey="windSpeed"
+            stroke="#4ade80"
             strokeWidth={3}
             dot={false}
-            activeDot={{ r: 4, fill: '#10b981' }}
-            name="Humidity"
+            activeDot={{ r: 4, fill: '#4ade80' }}
+            name="Wind Speed"
           />
 
           <Line

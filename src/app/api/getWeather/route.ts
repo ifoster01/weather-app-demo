@@ -7,9 +7,19 @@ export async function GET(request: NextRequest) {
   const startDate = searchParams.get('startDate');
   const endDate = searchParams.get('endDate');
 
-  const weatherApiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${lat}%2C${lng}/${startDate}/${endDate}?unitGroup=us&key=LUVAGWSNP7YZZEC5TX3BTPUGK&contentType=json`;
+  const weatherApiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${lat}%2C${lng}/${startDate}/${endDate}?unitGroup=us&key=${process.env.WEATHER_API_KEY}&contentType=json`;
 
   const response = await fetch(weatherApiUrl);
-  const data = await response.json();
-  return NextResponse.json(data);
+
+  if (!response.ok) {
+    return NextResponse.json({ error: 'Failed to fetch weather data (probably exceeded request limit)' }, { status: 500 });
+  }
+
+  try {
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    return NextResponse.json({ error: 'Failed to fetch weather data' }, { status: 500 });
+  }
 }

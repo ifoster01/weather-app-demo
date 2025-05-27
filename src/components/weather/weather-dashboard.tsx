@@ -21,7 +21,7 @@ export function WeatherDashboard() {
   // Initial loading state based on store coordinates (pre-hook data)
   if (latitude === null || longitude === null) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+      <div className="min-h-screen p-6 flex items-center justify-center">
         <div>Loading location data from store...</div>
       </div>
     );
@@ -30,7 +30,7 @@ export function WeatherDashboard() {
   // Loading state from the useWeatherData hook
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+      <div className="min-h-screen p-6 flex items-center justify-center">
         <div>Loading weather data...</div>
       </div>
     );
@@ -39,8 +39,8 @@ export function WeatherDashboard() {
   // Error state from the useWeatherData hook
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-        <div className="text-red-500">Error loading weather data: {error.message}</div>
+      <div className="min-h-screen p-6 flex items-center justify-center max-w-2xl mx-auto">
+        <div className="text-red-500 text-center">Error loading weather data: {error.message}</div>
       </div>
     );
   }

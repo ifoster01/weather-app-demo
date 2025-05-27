@@ -20,8 +20,7 @@ const getWeatherData = async (lat: number, lng: number, selectedWeekdayJS: numbe
   const response = await fetch(apiUrl);
   if (!response.ok) {
     const errorBody = await response.text();
-    console.error("Failed to fetch weather data. Status:", response.status, "Body:", errorBody, "URL:", apiUrl);
-    throw new Error(`Failed to fetch weather data: ${response.statusText} (Status: ${response.status}) for URL: ${apiUrl}`);
+    throw new Error(`Failed to fetch weather data: ${errorBody}`);
   }
   const data = await response.json();
   return data;
