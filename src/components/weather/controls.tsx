@@ -105,12 +105,12 @@ export function WeatherControls() {
       </div>
 
       <div className="flex items-center justify-center gap-2 w-1/2">
+        <Clock className="w-6 h-6 text-black" />
         <Select 
           value={selectedDayIndex.toString()} 
           onValueChange={(value) => setSelectedDayIndex(parseInt(value, 10))}
         >
           <SelectTrigger className="min-w-fit text-black border-none shadow-none bg-transparent text-xl">
-            <Clock className="w-8 h-8 text-black" />
             Every
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
@@ -125,7 +125,6 @@ export function WeatherControls() {
           onValueChange={(value) => setSelectedTimeOfDayIndex(parseInt(value, 10))}
         >
           <SelectTrigger className="border-none shadow-none bg-transparent min-w-fit text-xl">
-            <Clock className="w-8 h-8 text-black" />
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
           <SelectContent>

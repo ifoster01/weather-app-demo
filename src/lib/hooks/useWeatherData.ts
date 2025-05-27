@@ -8,7 +8,7 @@ const getWeatherData = async (lat: number, lng: number, selectedWeekdayJS: numbe
   
   const currentDayOfWeekJS = getDay(today);
   
-  const daysToAdd = selectedWeekdayJS - currentDayOfWeekJS;
+  const daysToAdd = selectedWeekdayJS - currentDayOfWeekJS < 0 ? selectedWeekdayJS - currentDayOfWeekJS + 7 : selectedWeekdayJS - currentDayOfWeekJS;
   const firstOccurrenceDate = addDays(today, daysToAdd);
   const secondOccurrenceDate = addDays(firstOccurrenceDate, 7);
 

@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { isThisWeek, isToday, subDays } from 'date-fns';
 
 interface WeatherCardProps {
   dayData: DayData;
@@ -61,9 +62,18 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
   const formattedFullDate = `${dayName} the ${dayOfMonth}${getOrdinalSuffix(dayOfMonth)}`;
 
   if (isPrimaryCard) {
-    dayLabel = `This ${formattedFullDate}`;
+    if (isThisWeek(currentDate)) {
+      dayLabel = `This ${formattedFullDate}`;
+    } else {
+      dayLabel = `Upcoming ${formattedFullDate}`;
+    }
   } else {
-    dayLabel = `Next ${formattedFullDate}`;
+    const dateWithout7Days = subDays(currentDate, 7);
+    if (isThisWeek(dateWithout7Days)) {
+      dayLabel = `Next ${formattedFullDate}`;
+    } else {
+      dayLabel = `Following ${formattedFullDate}`;
+    }
   }
   
   const cardTitleColor = isPrimaryCard ? 'text-red-500' : 'text-gray-900';
