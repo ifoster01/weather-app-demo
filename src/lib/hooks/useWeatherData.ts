@@ -6,14 +6,10 @@ import { format, addDays, getDay, startOfToday } from 'date-fns';
 const getWeatherData = async (lat: number, lng: number, selectedWeekdayJS: number): Promise<WeatherData> => {
   const today = startOfToday();
   
-  let firstOccurrenceDate = today;
   const currentDayOfWeekJS = getDay(today);
   
-  let daysToAdd = selectedWeekdayJS - currentDayOfWeekJS;
-  if (daysToAdd < 0) {
-    daysToAdd += 7;
-  }
-  firstOccurrenceDate = addDays(today, daysToAdd);
+  const daysToAdd = selectedWeekdayJS - currentDayOfWeekJS;
+  const firstOccurrenceDate = addDays(today, daysToAdd);
   const secondOccurrenceDate = addDays(firstOccurrenceDate, 7);
 
   const apiStartDate = format(firstOccurrenceDate, 'yyyy-MM-dd');

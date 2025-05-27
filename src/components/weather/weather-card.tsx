@@ -3,7 +3,13 @@
 import React from 'react';
 import { Sun, Cloud, CloudRain, Wind, Droplets, CloudSun, CloudMoon, Moon, CloudFog, Snowflake, Umbrella } from 'lucide-react';
 import { DayData } from '@/lib/types';
-import { startOfToday, addDays, isSameDay } from 'date-fns';
+import { WeatherChart } from './weather-chart';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface WeatherCardProps {
   dayData: DayData;
@@ -53,54 +59,52 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
   const dayOfMonth = currentDate.getDate();
   const dayName = currentDate.toLocaleDateString('en-US', { weekday: 'long' });
   const formattedFullDate = `${dayName} the ${dayOfMonth}${getOrdinalSuffix(dayOfMonth)}`;
-  const today = startOfToday();
 
   if (isPrimaryCard) {
-    if (isSameDay(currentDate, today)) {
-      dayLabel = `This ${formattedFullDate}`;
-    } else {
-      dayLabel = formattedFullDate;
-    }
+    dayLabel = `This ${formattedFullDate}`;
   } else {
-    if (isSameDay(currentDate, addDays(today, 1))) {
-      dayLabel = 'Tomorrow';
-    } else {
-      dayLabel = formattedFullDate;
-    }
+    dayLabel = `Next ${formattedFullDate}`;
   }
   
   const cardTitleColor = isPrimaryCard ? 'text-red-500' : 'text-gray-900';
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-      <h2 className={`text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center ${cardTitleColor}`}>
-        {dayLabel}
-      </h2>
-      <div className="flex flex-row items-center gap-3 sm:gap-4">
-        <div className="flex-shrink-0">
-          {getWeatherIcon(dayData.icon, dayData.datetimeEpoch, true)}
-        </div>
-        <div className="flex flex-col space-y-1 text-left">
-          <div className="text-lg sm:text-xl font-semibold">
-            {dayData.conditions} {Math.round(dayData.temp)}°F
+    <Card className="shadow-sm">
+      <CardHeader className="text-center pt-4">
+        <CardTitle className={`text-3xl font-bold ${cardTitleColor}`}>
+          {dayLabel}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+        <div className="w-full justify-center flex flex-row items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div className="flex-shrink-0">
+            {getWeatherIcon(dayData.icon, dayData.datetimeEpoch, true)}
           </div>
-          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-            <Wind className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>winds {Math.round(dayData.windspeed)}mph</span>
+          <div className="flex flex-col space-y-1 text-left">
+            <div className="text-lg sm:text-xl font-semibold">
+              {dayData.conditions} {Math.round(dayData.temp)}°F
+            </div>
+            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+              <Wind className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>winds {Math.round(dayData.windspeed)}mph</span>
+            </div>
+            {dayData.precipprob > 0.01 ? (
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+                <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>{Math.round(dayData.precipprob)}% chance rain</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+                <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
+                <span>no rain</span>
+              </div>
+            )}
           </div>
-          {dayData.precipprob > 0.01 ? (
-            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-              <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span>{Math.round(dayData.precipprob)}% chance rain</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-              <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
-              <span>no rain</span>
-            </div>
-          )}
         </div>
-      </div>
-    </div>
+        <WeatherChart
+          hours={dayData?.hours}
+        />
+      </CardContent>
+    </Card>
   );
 }

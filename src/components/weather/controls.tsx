@@ -23,12 +23,21 @@ const weekdays = [
   { value: 6, label: 'Saturday' },
 ];
 
+const timeOfDay = [
+  { value: 0, label: 'Morning' },
+  { value: 1, label: 'Afternoon' },
+  { value: 2, label: 'Evening' },
+  { value: 3, label: 'Night' },
+];
+
 export function WeatherControls() {
   const {
     locationName,
     selectedDayIndex,
     setLocationAndCoordinates,
     setSelectedDayIndex,
+    selectedTimeOfDayIndex,
+    setSelectedTimeOfDayIndex,
   } = useWeatherStore();
   
   const [searchInput, setSearchInput] = useState(locationName || '');
@@ -80,32 +89,48 @@ export function WeatherControls() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4 sm:gap-0">
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <MapPin className="w-5 h-5 text-gray-600 absolute left-2 top-1/2 -translate-y-1/2" />
-          <Input
-            ref={inputRef}
-            value={searchInput}
-            onChange={handleSearchInputChange}
-            placeholder="Search location..."
-            className="w-64 text-lg font-medium pl-8"
-            disabled={!isLoaded}
-          />
-        </div>
+    <div className="w-4/5 mx-auto flex flex-col sm:flex-row items-center justify-around mb-8 gap-4 sm:gap-0">
+      <div className="w-1/2 flex items-center justify-center gap-3 relative">
+        <MapPin className="w-8 h-8 absolute left-2 top-1/2 -translate-y-1/2" />
+        <Input
+          ref={inputRef}
+          value={searchInput}
+          onChange={handleSearchInputChange}
+          placeholder="Search location..."
+          className="w-full font-medium pl-12 border-none shadow-none"
+          style={{
+            fontSize: '1.5rem',
+          }}
+          disabled={!isLoaded}
+        />
       </div>
 
-      <div className="flex items-center gap-2">
-        <Clock className="w-4 h-4 text-gray-500" />
+      <div className="flex items-center justify-center gap-2 w-1/2">
         <Select 
           value={selectedDayIndex.toString()} 
           onValueChange={(value) => setSelectedDayIndex(parseInt(value, 10))}
         >
-          <SelectTrigger className="w-40 border-none shadow-none bg-transparent">
+          <SelectTrigger className="min-w-fit text-black border-none shadow-none bg-transparent text-xl">
+            <Clock className="w-8 h-8 text-black" />
+            Every
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
           <SelectContent>
             {weekdays.map(day => (
+              <SelectItem key={day.value} value={day.value.toString()}>{day.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select 
+          value={selectedTimeOfDayIndex.toString()}
+          onValueChange={(value) => setSelectedTimeOfDayIndex(parseInt(value, 10))}
+        >
+          <SelectTrigger className="border-none shadow-none bg-transparent min-w-fit text-xl">
+            <Clock className="w-8 h-8 text-black" />
+            <SelectValue placeholder="Select a day" />
+          </SelectTrigger>
+          <SelectContent>
+            {timeOfDay.map(day => (
               <SelectItem key={day.value} value={day.value.toString()}>{day.label}</SelectItem>
             ))}
           </SelectContent>

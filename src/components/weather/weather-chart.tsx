@@ -12,13 +12,9 @@ import {
   Tooltip,
 } from 'recharts';
 import { HourlyData } from '@/lib/types';
-import useWeatherData from '@/lib/hooks/useWeatherData';
 
 interface WeatherChartProps {
-  lat: number;
-  lng: number;
-  title: string;
-  selectedDay?: number; // Index of the day to display (0 = today, 1 = tomorrow, etc.)
+  hours?: HourlyData[];
 }
 
 interface PayloadEntry {
@@ -34,14 +30,12 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-export function WeatherChart({ title, selectedDay = 0 }: WeatherChartProps) {
-  const { data: weatherData, isLoading, error } = useWeatherData();
-  
+export function WeatherChart({ hours }: WeatherChartProps) {
   // Transform weather API data for the chart
   const chartData = React.useMemo(() => {
-    if (!weatherData?.days?.[selectedDay]?.hours) return [];
+    if (!hours) return [];
 
-    return weatherData.days[selectedDay].hours.map((hour: HourlyData) => {
+    return hours.map((hour: HourlyData) => {
       // Extract hour from datetime (e.g., "14:00:00" -> "2:00 PM")
       const time = new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -53,13 +47,13 @@ export function WeatherChart({ title, selectedDay = 0 }: WeatherChartProps) {
         temperature: Math.round(hour.temp),
         humidity: Math.round(hour.humidity),
         pressure: Math.round(hour.pressure - 1000), // Normalize pressure for better visualization
-        windSpeed: Math.round(hour.windspeed),
+        precipProb: Math.round(hour.precipprob),
         uvIndex: hour.uvindex,
         cloudCover: Math.round(hour.cloudcover),
         originalHour: hour.datetime,
       };
     });
-  }, [weatherData, selectedDay]);
+  }, [hours]);
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
@@ -83,28 +77,12 @@ export function WeatherChart({ title, selectedDay = 0 }: WeatherChartProps) {
       case 'temperature': return '°F';
       case 'humidity': return '%';
       case 'pressure': return ' hPa';
-      case 'windSpeed': return ' mph';
+      case 'precipProb': return '%';
       case 'uvIndex': return '';
       case 'cloudCover': return '%';
       default: return '';
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="w-full h-80 flex items-center justify-center">
-        <div className="text-gray-500">Loading weather data...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-80 flex items-center justify-center">
-        <div className="text-red-500">Error loading weather data</div>
-      </div>
-    );
-  }
 
   if (!chartData.length) {
     return (
@@ -121,21 +99,6 @@ export function WeatherChart({ title, selectedDay = 0 }: WeatherChartProps) {
 
   return (
     <div className="w-full h-80">
-      <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-          {title.toUpperCase()}
-        </h3>
-        <p className="text-xs text-gray-500 mt-1">
-          {weatherData?.days?.[selectedDay]?.datetime && 
-            new Date(weatherData.days[selectedDay].datetime).toLocaleDateString('en-US', {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric'
-            })
-          }
-        </p>
-      </div>
-
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}
@@ -163,14 +126,14 @@ export function WeatherChart({ title, selectedDay = 0 }: WeatherChartProps) {
             strokeDasharray="2 2"
           />
 
-          {/* Temperature line - Blue */}
+          {/* Temperature line - Red */}
           <Line
             type="monotone"
             dataKey="temperature"
-            stroke="#3b82f6"
+            stroke="oklch(63.7% 0.237 25.331)"
             strokeWidth={3}
             dot={false}
-            activeDot={{ r: 4, fill: '#3b82f6' }}
+            activeDot={{ r: 4, fill: 'oklch(63.7% 0.237 25.331)' }}
             name="Temperature"
           />
 
@@ -185,15 +148,15 @@ export function WeatherChart({ title, selectedDay = 0 }: WeatherChartProps) {
             name="Humidity"
           />
 
-          {/* Wind Speed line - Purple */}
+          {/* Precipitation Probability line - Blue */}
           <Line
             type="monotone"
-            dataKey="windSpeed"
-            stroke="#8b5cf6"
+            dataKey="precipProb"
+            stroke="oklch(62.3% 0.214 259.815)"
             strokeWidth={2}
             dot={false}
-            activeDot={{ r: 4, fill: '#8b5cf6' }}
-            name="Wind Speed"
+            activeDot={{ r: 4, fill: 'oklch(62.3% 0.214 259.815)' }}
+            name="Precipitation Probability"
           />
         </LineChart>
       </ResponsiveContainer>

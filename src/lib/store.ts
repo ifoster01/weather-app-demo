@@ -5,8 +5,12 @@ export interface WeatherStore {
   latitude: number | null;
   longitude: number | null;
   selectedDayIndex: number;
+  selectedTimeOfDayIndex: number;
   setLocationAndCoordinates: (name: string, lat: number, lng: number) => void;
   setSelectedDayIndex: (dayIndex: number) => void;
+  setSelectedTimeOfDayIndex: (timeOfDayIndex: number) => void;
+  incrementDayIndex: () => void;
+  decrementDayIndex: () => void;
 }
 
 const DEFAULT_LATITUDE = 37.7749;
@@ -19,6 +23,7 @@ export const useWeatherStore = create<WeatherStore>((set) => ({
   latitude: DEFAULT_LATITUDE,
   longitude: DEFAULT_LONGITUDE,
   selectedDayIndex: getCurrentWeekday(),
+  selectedTimeOfDayIndex: 0,
 
   setLocationAndCoordinates: (name, lat, lng) => 
     set({
@@ -27,4 +32,13 @@ export const useWeatherStore = create<WeatherStore>((set) => ({
       longitude: lng,
     }),
   setSelectedDayIndex: (dayIndex) => set({ selectedDayIndex: dayIndex }),
+  setSelectedTimeOfDayIndex: (timeOfDayIndex) => set({ selectedTimeOfDayIndex: timeOfDayIndex }),
+  incrementDayIndex: () => 
+    set((state) => ({ 
+      selectedDayIndex: Math.min(state.selectedDayIndex + 1, 6) 
+    })),
+  decrementDayIndex: () => 
+    set((state) => ({ 
+      selectedDayIndex: Math.max(state.selectedDayIndex - 1, 0) 
+    })),
 }));

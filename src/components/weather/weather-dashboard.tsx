@@ -1,20 +1,22 @@
 'use client';
 
 import React from 'react';
-// Removed ChevronLeft, ChevronRight, Button as they are commented out
 import { WeatherControls } from './controls';
 import { WeatherCard } from './weather-card';
-import { WeatherChart } from './weather-chart';
 import { useWeatherStore } from '@/lib/store';
 import useWeatherData from '@/lib/hooks/useWeatherData'; // Import the hook
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"; // Added Shadcn Carousel imports
+import { Separator } from '../ui/separator';
 
 export function WeatherDashboard() {
-  const { latitude, longitude, locationName, selectedDayIndex = 0 } = useWeatherStore();
-  const { data: weatherDataHookResult, isLoading, error } = useWeatherData(); // Call the hook here
-
-  // Calculate the actual index offset from today to the selected day of the week
-  const todayDayOfWeek = new Date().getDay(); // 0 for Sunday, ..., 6 for Saturday
-  const actualDayIndexOffset = (selectedDayIndex - todayDayOfWeek + 7) % 7;
+  const { latitude, longitude, selectedDayIndex, incrementDayIndex, decrementDayIndex } = useWeatherStore(); // Added selectedDayIndex and its modifiers
+  const { data: weatherDataHookResult, isLoading, error } = useWeatherData();
 
   // Initial loading state based on store coordinates (pre-hook data)
   if (latitude === null || longitude === null) {
@@ -44,8 +46,9 @@ export function WeatherDashboard() {
   }
 
   // Ensure we have data and the specific days we need
-  const primaryDayData = weatherDataHookResult?.days?.[actualDayIndexOffset];
-  const secondaryDayData = weatherDataHookResult?.days?.[actualDayIndexOffset + 7];
+  // primaryDayData will now be based on selectedDayIndex
+  const primaryDayData = weatherDataHookResult?.days?.[0];
+  const secondaryDayData = weatherDataHookResult?.days?.[weatherDataHookResult.days.length - 1];
 
   // Helper to format date string or return a default
   const formatDate = (datetimeEpoch: number | undefined) => {
@@ -58,49 +61,52 @@ export function WeatherDashboard() {
   const secondaryDayDateString = secondaryDayData ? formatDate(secondaryDayData.datetimeEpoch) : "Selected Day Next Week";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen max-w-screen p-6">
       <div className="max-w-7xl mx-auto">
         <WeatherControls />
 
-        {/* Weather Cards Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 mb-8 mt-8">
-          {primaryDayData ? (
-            <WeatherCard dayData={primaryDayData} isPrimaryCard={true} />
-          ) : (
-            <div className="text-center p-4">No data for {primaryDayDateString}.</div>
-          )}
-          {secondaryDayData ? (
-            <WeatherCard dayData={secondaryDayData} isPrimaryCard={false} />
-          ) : (
-            <div className="text-center p-4">No data for {secondaryDayDateString}.</div>
-          )}
-        </div>
+        <Separator className="my-8 bg-black" />
 
-        {/* Charts Section */}
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-8">
-          Hourly Forecast for {locationName}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
-          {/* Today's Chart */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <WeatherChart
-              lat={latitude}
-              lng={longitude}
-              title={`Hourly for ${primaryDayDateString}`}
-              selectedDay={actualDayIndexOffset}
-            />
-          </div>
-
-          {/* Tomorrow's Chart */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <WeatherChart
-              lat={latitude}
-              lng={longitude}
-              title={`Hourly for ${secondaryDayDateString}`}
-              selectedDay={actualDayIndexOffset + 7}
-            />
-          </div>
+        {/* Weather Cards Section with Carousel */}
+        <div className="mt-8">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: false, // We handle loop prevention via store actions
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {/* We will display one primary card, controlled by selectedDayIndex */}
+              {primaryDayData ? (
+                <CarouselItem className="w-full md:basis-1/2"> {/* Ensure it takes up appropriate space */}
+                  <WeatherCard dayData={primaryDayData} isPrimaryCard={true} />
+                </CarouselItem>
+              ) : (
+                 <CarouselItem className="w-full md:basis-1/2">
+                    <div className="text-center p-4 h-full flex items-center justify-center">No data for {primaryDayDateString}.</div>
+                 </CarouselItem>
+              )}
+              {/* Optionally, you could show more cards here if needed, but the request focuses on one primary card changing */}
+               {secondaryDayData && primaryDayData?.datetimeEpoch !== secondaryDayData.datetimeEpoch ? ( // Only show if different from primary
+                <CarouselItem className="w-full md:basis-1/2">
+                  <WeatherCard dayData={secondaryDayData} isPrimaryCard={false} />
+                </CarouselItem>
+              ) : !secondaryDayData ? (
+                 <CarouselItem className="w-full md:basis-1/2">
+                   <div className="text-center p-4 h-full flex items-center justify-center">No data for {secondaryDayDateString}.</div>
+                 </CarouselItem>
+              ) : null}
+            </CarouselContent>
+            <CarouselPrevious onClick={decrementDayIndex} disabled={selectedDayIndex === 0} />
+            <CarouselNext onClick={incrementDayIndex} disabled={selectedDayIndex === 6} />
+          </Carousel>
         </div>
+        
+        {/* Fallback display if no primary data, in case carousel structure above doesn't render it */}
+        {!primaryDayData && !isLoading && !error && (
+          <div className="text-center p-4 mt-8">No weather data available for the selected day.</div>
+        )}
       </div>
     </div>
   );
