@@ -4,6 +4,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* custom sizing */
+  --text-header: var(--text-header);
+  --text-header-mobile: var(--text-header-mobile);
+  --text-subheader: var(--text-subheader);
+  --text-subheader-mobile: var(--text-subheader-mobile);
+  --text-body: var(--text-body);
+  --text-body-mobile: var(--text-body-mobile);
+  --text-small: var(--text-small);
+  --text-small-mobile: var(--text-small-mobile);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -44,6 +54,18 @@
 }
 
 :root {
+  /* custom sizing */
+  --text-header: 1.5rem;
+  --text-header-mobile: 1.3rem;
+  --text-subheader: 1.25rem;
+  --text-subheader-mobile: 1rem;
+  --text-body: 1rem;
+  --text-body-mobile: 0.9rem;
+  --text-small: 0.875rem;
+  --text-small-mobile: 0.75rem;
+
+  --spacing-small: 0.5rem;
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

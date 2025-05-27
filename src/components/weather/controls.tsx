@@ -97,24 +97,24 @@ export function WeatherControls() {
   return (
     <div className="w-full md:w-4/5 mx-auto flex flex-col sm:flex-row items-center justify-around mb-8 gap-4 sm:gap-0">
       <div className="w-full sm:w-1/2 flex items-center justify-center gap-3 relative">
-        <MapPin className="w-6 h-6 sm:w-8 sm:h-8 absolute left-2 top-1/2 -translate-y-1/2" />
+        <MapPin className="w-6 h-6 sm:w-7 sm:h-7 absolute left-2 top-1/2 -translate-y-1/2" />
         <Input
           ref={inputRef}
           value={searchInput}
           onChange={handleSearchInputChange}
           placeholder="Search location..."
-          className="block w-full font-medium pl-10 sm:pl-12 border-none shadow-none text-lg md:text-2xl"
+          className="block w-full font-medium pl-10 sm:pl-12 border-none shadow-none text-lg md:text-subheader"
           disabled={!isLoaded}
         />
       </div>
 
-      <div className="flex items-center justify-center gap-2 w-full sm:w-1/2">
-        <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+      <div className="flex items-center min-w-fit justify-start md:justify-center gap-2 w-full pl-3 md:pl-0 sm:w-1/2">
+        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-black" />
         <Select
           value={selectedDayIndex.toString()}
           onValueChange={value => setSelectedDayIndex(parseInt(value, 10))}
         >
-          <SelectTrigger className="min-w-fit text-black border-none shadow-none bg-transparent text-base sm:text-lg md:text-xl">
+          <SelectTrigger className="min-w-fit text-black border-none shadow-none bg-transparent text-body-mobile md:text-body">
             Every
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
@@ -132,7 +132,7 @@ export function WeatherControls() {
             setSelectedTimeOfDayIndex(parseInt(value, 10))
           }
         >
-          <SelectTrigger className="border-none shadow-none bg-transparent min-w-fit text-base sm:text-lg md:text-xl">
+          <SelectTrigger className="border-none shadow-none bg-transparent min-w-fit text-body-mobile md:text-body">
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
           <SelectContent>

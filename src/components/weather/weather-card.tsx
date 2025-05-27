@@ -147,7 +147,7 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
   return (
     <Card className="shadow-sm">
       <CardHeader className="text-center pt-4">
-        <CardTitle className={`text-3xl font-bold ${cardTitleColor}`}>
+        <CardTitle className={`text-header-mobile md:text-header font-bold ${cardTitleColor}`}>
           {dayLabel}
         </CardTitle>
       </CardHeader>
@@ -157,15 +157,15 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
             {getWeatherIcon(dayData.icon, dayData.datetimeEpoch, true)}
           </div>
           <div className="flex flex-col space-y-1 text-left">
-            <div className="text-lg sm:text-xl font-semibold">
+            <div className="text-lg sm:text-body-mobile md:text-body font-semibold">
               {dayData.conditions} {maxTemp}°F
             </div>
-            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+            <div className="flex items-center gap-1 text-small-mobile md:text-small text-gray-600">
               <Wind className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>winds {maxWindspeed}mph</span>
             </div>
             {maxPrecipProb > 0 ? (
-              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
+              <div className="flex items-center gap-1 text-small-mobile md:text-small text-gray-600">
                 <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{maxPrecipProb}% chance rain</span>
               </div>

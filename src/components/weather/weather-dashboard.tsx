@@ -4,15 +4,14 @@ import React from 'react';
 import { WeatherControls } from './controls';
 import { WeatherCard } from './weather-card';
 import { useWeatherStore } from '@/lib/store';
-import useWeatherData from '@/lib/hooks/useWeatherData'; // Import the hook
+import useWeatherData from '@/lib/hooks/useWeatherData';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from '@/components/ui/carousel'; // Added Shadcn Carousel imports
-import { Separator } from '../ui/separator';
+} from '@/components/ui/carousel';
 import { Button } from '../ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
@@ -85,7 +84,7 @@ export function WeatherDashboard() {
       <div className="max-w-6xl mx-auto">
         <WeatherControls />
 
-        <Separator className="my-8 bg-black" />
+        <div className="my-8 h-0.5 w-full bg-gray-200 rounded-full" />
 
         {/* Weather Cards Section with Carousel */}
         <div className="mt-8">

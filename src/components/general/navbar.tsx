@@ -13,20 +13,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import Link from 'next/link';
 
 export function Navbar() {
   return (
-    <nav className="p-4 max-w-6xl mx-auto">
+    <nav className="p-4 w-full">
       {/* Desktop Navbar - visible on md screens and up */}
       <div className="hidden md:flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Weather.io" width={40} height={40} />
-          <h1 className="text-2xl font-bold">Weather.io</h1>
-        </div>
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/logo.svg" alt="Weather.io" width={20} height={20} />
+          <h1 className="text-lg font-bold">Weather.io</h1>
+        </Link>
         <div className="flex items-center gap-2">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline">Help</Button>
+              <Button variant="link">Help</Button>
             </PopoverTrigger>
             <PopoverContent>
               <p>This button doesn&apos;t currently work.</p>
@@ -34,7 +35,7 @@ export function Navbar() {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button>Sign Out</Button>
+              <Button variant="link">Sign Out</Button>
             </PopoverTrigger>
             <PopoverContent>
               <p>This button doesn&apos;t currently work.</p>
@@ -75,7 +76,7 @@ export function Navbar() {
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="link"
                     className="w-full justify-start text-left"
                   >
                     Help
@@ -87,7 +88,10 @@ export function Navbar() {
               </Popover>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button className="w-full justify-start text-left">
+                  <Button
+                    variant="link"
+                    className="w-full justify-start text-left"
+                  >
                     Sign Out
                   </Button>
                 </PopoverTrigger>
