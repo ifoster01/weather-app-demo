@@ -82,7 +82,7 @@ export function WeatherDashboard() {
 
   return (
     <div className="min-h-screen max-w-screen p-6">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <WeatherControls />
 
         <Separator className="my-8 bg-black" />
@@ -130,17 +130,17 @@ export function WeatherDashboard() {
               ) : null}
             </CarouselContent>
             <CarouselPrevious
-              className="hidden lg:flex"
+              className="hidden xl:flex"
               onClick={decrementDayIndex}
               disabled={selectedDayIndex === 0}
             />
             <CarouselNext
-              className="hidden lg:flex"
+              className="hidden xl:flex"
               onClick={incrementDayIndex}
               disabled={selectedDayIndex === 6}
             />
           </Carousel>
-          <div className="lg:hidden flex justify-center mt-4 gap-2">
+          <div className="xl:hidden flex justify-center mt-4 gap-2">
             <Button
               variant="ghost"
               onClick={decrementDayIndex}
@@ -157,6 +157,9 @@ export function WeatherDashboard() {
               Next
               <ChevronRight className="w-4 h-4" />
             </Button>
+          </div>
+          <div className="md:hidden text-center text-sm text-gray-500 mt-4">
+            Swipe left/right to see next week&apos;s weather.
           </div>
         </div>
 

@@ -174,7 +174,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
       // convert value from am/pm to 24 hr time
       let hour = parseInt(value.substring(0, 2), 10);
       const isPM = value.includes('PM');
-      if (isPM) {
+      if (isPM && hour !== 12) {
         hour += 12;
       }
       const currentTargetSlot = timeSlotConfigs[selectedTimeOfDayIndex];
@@ -191,6 +191,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
           dy={16}
           textAnchor="middle"
           fontSize={12}
+          fontWeight={isBufferOnly ? 'normal' : 'bold'}
           fill={isBufferOnly ? 'gray' : 'black'}
         >
           {payload.value}

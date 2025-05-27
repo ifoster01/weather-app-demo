@@ -6,12 +6,17 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer'; // Assuming ShadCN UI drawer path
-import { Menu } from 'lucide-react'; // For the hamburger icon
+} from '@/components/ui/drawer';
+import { Menu } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 export function Navbar() {
   return (
-    <nav className="p-4 max-w-5xl mx-auto">
+    <nav className="p-4 max-w-6xl mx-auto">
       {/* Desktop Navbar - visible on md screens and up */}
       <div className="hidden md:flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -19,8 +24,22 @@ export function Navbar() {
           <h1 className="text-2xl font-bold">Weather.io</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">Help</Button>
-          <Button>Sign Out</Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline">Help</Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <p>This button doesn&apos;t currently work.</p>
+            </PopoverContent>
+          </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button>Sign Out</Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <p>This button doesn&apos;t currently work.</p>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
 
@@ -53,22 +72,30 @@ export function Navbar() {
               </DrawerTitle>
             </DrawerHeader>
             <div className="p-4 flex flex-col gap-3">
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left"
-              >
-                Help
-              </Button>
-              <Button className="w-full justify-start text-left">
-                Sign Out
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left"
+                  >
+                    Help
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p>This button doesn&apos;t currently work.</p>
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button className="w-full justify-start text-left">
+                    Sign Out
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <p>This button doesn&apos;t currently work.</p>
+                </PopoverContent>
+              </Popover>
             </div>
-            {/* Optional: Footer with a close button if needed, though drawers often close on overlay click or swipe */}
-            {/* <DrawerFooter className="mt-auto p-4 border-t">
-              <DrawerClose asChild>
-                <Button variant="outline" className="w-full">Close</Button>
-              </DrawerClose>
-            </DrawerFooter> */}
           </DrawerContent>
         </Drawer>
       </div>

@@ -14,10 +14,11 @@ import {
   Snowflake,
   Umbrella,
 } from 'lucide-react';
-import { DayData } from '@/lib/types';
+import { DayData, HourlyData } from '@/lib/types';
 import { WeatherChart } from './weather-chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { isThisWeek, subDays } from 'date-fns';
+import { useWeatherStore } from '@/lib/store';
 
 interface WeatherCardProps {
   dayData: DayData;
@@ -39,6 +40,8 @@ const getOrdinalSuffix = (day: number): string => {
 };
 
 export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
+  const { selectedTimeOfDayIndex } = useWeatherStore();
+
   const getWeatherIcon = (
     iconString: string | undefined,
     datetimeEpoch: number,
@@ -86,6 +89,38 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
     }
   };
 
+  const calculateMaxValues = (hours: HourlyData[]) => {
+    if (!hours || hours.length === 0) {
+      return {
+        maxTemp: dayData.temp, // Fallback to daily average if no hourly data
+        maxPrecipProb: dayData.precipprob,
+        maxWindspeed: dayData.windspeed,
+      };
+    }
+
+    // slice the hours array to only include hours in the selected time range
+    const hoursInRange =
+      selectedTimeOfDayIndex === 0
+        ? hours.slice(8, 13)
+        : selectedTimeOfDayIndex === 1
+          ? hours.slice(13, 18)
+          : hours.slice(17, 22);
+
+    const maxTemp = Math.round(Math.max(...hoursInRange.map(h => h.temp)));
+    const maxPrecipProb = Math.round(
+      Math.max(...hoursInRange.map(h => h.precipprob))
+    );
+    const maxWindspeed = Math.round(
+      Math.max(...hoursInRange.map(h => h.windspeed))
+    );
+
+    return { maxTemp, maxPrecipProb, maxWindspeed };
+  };
+
+  const { maxTemp, maxPrecipProb, maxWindspeed } = calculateMaxValues(
+    dayData.hours
+  );
+
   let dayLabel: string;
   const currentDate = new Date(dayData.datetimeEpoch * 1000);
   const dayOfMonth = currentDate.getDate();
@@ -123,16 +158,16 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
           </div>
           <div className="flex flex-col space-y-1 text-left">
             <div className="text-lg sm:text-xl font-semibold">
-              {dayData.conditions} {Math.round(dayData.temp)}°F
+              {dayData.conditions} {maxTemp}°F
             </div>
             <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
               <Wind className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span>winds {Math.round(dayData.windspeed)}mph</span>
+              <span>winds {maxWindspeed}mph</span>
             </div>
-            {dayData.precipprob > 0.01 ? (
+            {maxPrecipProb > 0 ? (
               <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
                 <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span>{Math.round(dayData.precipprob)}% chance rain</span>
+                <span>{maxPrecipProb}% chance rain</span>
               </div>
             ) : (
               <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
