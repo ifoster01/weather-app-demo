@@ -26,7 +26,7 @@ const weekdays = [
 const timeOfDay = [
   { value: 0, label: 'Morning' },
   { value: 1, label: 'Afternoon' },
-  { value: 2, label: 'Evening' }
+  { value: 2, label: 'Evening' },
 ];
 
 export function WeatherControls() {
@@ -38,7 +38,7 @@ export function WeatherControls() {
     selectedTimeOfDayIndex,
     setSelectedTimeOfDayIndex,
   } = useWeatherStore();
-  
+
   const [searchInput, setSearchInput] = useState(locationName || '');
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -75,11 +75,18 @@ export function WeatherControls() {
       types: ['geocode'], // Geocode is generally better for cities/addresses
     };
     if (!autocompleteRef.current) {
-      autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, options);
+      autocompleteRef.current = new google.maps.places.Autocomplete(
+        inputRef.current,
+        options
+      );
     }
-    const listener = autocompleteRef.current.addListener('place_changed', handlePlaceChanged);
+    const listener = autocompleteRef.current.addListener(
+      'place_changed',
+      handlePlaceChanged
+    );
     return () => {
-      if (google?.maps?.event && listener) google.maps.event.removeListener(listener);
+      if (google?.maps?.event && listener)
+        google.maps.event.removeListener(listener);
     };
   }, [isLoaded, loadError, handlePlaceChanged]);
 
@@ -103,9 +110,9 @@ export function WeatherControls() {
 
       <div className="flex items-center justify-center gap-2 w-full sm:w-1/2">
         <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
-        <Select 
-          value={selectedDayIndex.toString()} 
-          onValueChange={(value) => setSelectedDayIndex(parseInt(value, 10))}
+        <Select
+          value={selectedDayIndex.toString()}
+          onValueChange={value => setSelectedDayIndex(parseInt(value, 10))}
         >
           <SelectTrigger className="min-w-fit text-black border-none shadow-none bg-transparent text-base sm:text-lg md:text-xl">
             Every
@@ -113,20 +120,26 @@ export function WeatherControls() {
           </SelectTrigger>
           <SelectContent>
             {weekdays.map(day => (
-              <SelectItem key={day.value} value={day.value.toString()}>{day.label}</SelectItem>
+              <SelectItem key={day.value} value={day.value.toString()}>
+                {day.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Select 
+        <Select
           value={selectedTimeOfDayIndex.toString()}
-          onValueChange={(value) => setSelectedTimeOfDayIndex(parseInt(value, 10))}
+          onValueChange={value =>
+            setSelectedTimeOfDayIndex(parseInt(value, 10))
+          }
         >
           <SelectTrigger className="border-none shadow-none bg-transparent min-w-fit text-base sm:text-lg md:text-xl">
             <SelectValue placeholder="Select a day" />
           </SelectTrigger>
           <SelectContent>
             {timeOfDay.map(day => (
-              <SelectItem key={day.value} value={day.value.toString()}>{day.label}</SelectItem>
+              <SelectItem key={day.value} value={day.value.toString()}>
+                {day.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

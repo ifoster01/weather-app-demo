@@ -12,7 +12,12 @@ export async function GET(request: NextRequest) {
   const response = await fetch(weatherApiUrl);
 
   if (!response.ok) {
-    return NextResponse.json({ error: 'Failed to fetch weather data (probably exceeded request limit)' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch weather data (probably exceeded request limit)',
+      },
+      { status: 500 }
+    );
   }
 
   try {
@@ -20,6 +25,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error fetching weather data:', error);
-    return NextResponse.json({ error: 'Failed to fetch weather data' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch weather data' },
+      { status: 500 }
+    );
   }
 }

@@ -3,12 +3,19 @@ import { WeatherData } from '@/lib/types';
 import { useWeatherStore } from '@/lib/store';
 import { format, addDays, getDay, startOfToday } from 'date-fns';
 
-const getWeatherData = async (lat: number, lng: number, selectedWeekdayJS: number): Promise<WeatherData> => {
+const getWeatherData = async (
+  lat: number,
+  lng: number,
+  selectedWeekdayJS: number
+): Promise<WeatherData> => {
   const today = startOfToday();
-  
+
   const currentDayOfWeekJS = getDay(today);
-  
-  const daysToAdd = selectedWeekdayJS - currentDayOfWeekJS < 0 ? selectedWeekdayJS - currentDayOfWeekJS + 7 : selectedWeekdayJS - currentDayOfWeekJS;
+
+  const daysToAdd =
+    selectedWeekdayJS - currentDayOfWeekJS < 0
+      ? selectedWeekdayJS - currentDayOfWeekJS + 7
+      : selectedWeekdayJS - currentDayOfWeekJS;
   const firstOccurrenceDate = addDays(today, daysToAdd);
   const secondOccurrenceDate = addDays(firstOccurrenceDate, 7);
 
@@ -32,10 +39,12 @@ const useWeatherData = () => {
   const { data, isLoading, error } = useQuery<WeatherData, Error>({
     queryKey: ['weather', latitude, longitude, selectedDayIndex],
     queryFn: () => {
-        if (latitude === null || longitude === null) {
-            return Promise.reject(new Error("Latitude or longitude is null. Query should not have run."));
-        }
-        return getWeatherData(latitude, longitude, selectedDayIndex);
+      if (latitude === null || longitude === null) {
+        return Promise.reject(
+          new Error('Latitude or longitude is null. Query should not have run.')
+        );
+      }
+      return getWeatherData(latitude, longitude, selectedDayIndex);
     },
     enabled: latitude !== null && longitude !== null,
     staleTime: 5 * 60 * 1000,

@@ -6,12 +6,12 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"; // Assuming ShadCN UI drawer path
+} from '@/components/ui/drawer'; // Assuming ShadCN UI drawer path
 import { Menu } from 'lucide-react'; // For the hamburger icon
 
 export function Navbar() {
   return (
-    <nav className="p-4 max-w-7xl mx-auto">
+    <nav className="p-4 max-w-5xl mx-auto">
       {/* Desktop Navbar - visible on md screens and up */}
       <div className="hidden md:flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -31,7 +31,7 @@ export function Navbar() {
           <Image src="/logo.svg" alt="Weather.io" width={32} height={32} />
           <h1 className="text-xl font-bold">Weather.io</h1>
         </div>
-        
+
         {/* Drawer on the right for mobile */}
         <Drawer direction="right">
           <DrawerTrigger asChild>
@@ -43,13 +43,25 @@ export function Navbar() {
           <DrawerContent className="fixed top-0 right-0 h-full w-[250px] mt-0 rounded-none bg-background z-50">
             <DrawerHeader className="p-4 border-b">
               <DrawerTitle className="flex items-center gap-2 text-lg">
-                <Image src="/logo.svg" alt="Weather.io" width={28} height={28} />
+                <Image
+                  src="/logo.svg"
+                  alt="Weather.io"
+                  width={28}
+                  height={28}
+                />
                 <span>Weather.io</span>
               </DrawerTitle>
             </DrawerHeader>
             <div className="p-4 flex flex-col gap-3">
-              <Button variant="outline" className="w-full justify-start text-left">Help</Button>
-              <Button className="w-full justify-start text-left">Sign Out</Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start text-left"
+              >
+                Help
+              </Button>
+              <Button className="w-full justify-start text-left">
+                Sign Out
+              </Button>
             </div>
             {/* Optional: Footer with a close button if needed, though drawers often close on overlay click or swipe */}
             {/* <DrawerFooter className="mt-auto p-4 border-t">

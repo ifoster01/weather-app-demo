@@ -70,17 +70,17 @@ interface CustomXAxisTickProps {
 
 const timeSlotConfigs: Record<number, TimeSlotConfig> = {
   0: {
-    main:   { start: 8,  end: 12, spansMidnight: false },
-    buffer: { start: 6,  end: 14, spansMidnight: false },
+    main: { start: 8, end: 12, spansMidnight: false },
+    buffer: { start: 6, end: 14, spansMidnight: false },
   },
   1: {
-    main:   { start: 13, end: 17, spansMidnight: false },
+    main: { start: 13, end: 17, spansMidnight: false },
     buffer: { start: 11, end: 19, spansMidnight: false },
   },
   2: {
-    main:   { start: 17, end: 21, spansMidnight: false },
+    main: { start: 17, end: 21, spansMidnight: false },
     buffer: { start: 15, end: 23, spansMidnight: false },
-  }
+  },
 };
 
 const isHourInDef = (hourNum: number, def: HourDef): boolean => {
@@ -104,7 +104,10 @@ export function WeatherChart({ hours }: WeatherChartProps) {
     const currentTargetSlot = timeSlotConfigs[selectedTimeOfDayIndex];
     if (!currentTargetSlot) {
       return hours.map((hour: HourlyData) => ({
-        time: new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
+        time: new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString(
+          'en-US',
+          { hour: 'numeric', hour12: true }
+        ),
         temperature: Math.round(hour.temp),
         windSpeed: Math.round(hour.windspeed),
         pressure: Math.round(hour.pressure - 1000),
@@ -124,13 +127,16 @@ export function WeatherChart({ hours }: WeatherChartProps) {
     });
 
     return filteredHours.map((hour: HourlyData) => {
-      const time = new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        hour12: true
-      });
+      const time = new Date(`2000-01-01T${hour.datetime}`).toLocaleTimeString(
+        'en-US',
+        {
+          hour: 'numeric',
+          hour12: true,
+        }
+      );
       const hourNum = parseInt(hour.datetime.substring(0, 2), 10);
       const isMain = isHourInDef(hourNum, mainRange);
-      
+
       return {
         time,
         temperature: Math.round(hour.temp),
@@ -163,7 +169,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
 
   const CustomXAxisTick = (props: CustomXAxisTickProps) => {
     const { x, y, payload } = props;
-    
+
     const calculateIsBufferOnly = (value: string) => {
       // convert value from am/pm to 24 hr time
       let hour = parseInt(value.substring(0, 2), 10);
@@ -179,7 +185,14 @@ export function WeatherChart({ hours }: WeatherChartProps) {
 
     return (
       <g transform={`translate(${x},${y})`}>
-        <Text x={0} y={0} dy={16} textAnchor="middle" fontSize={12} fill={isBufferOnly ? 'gray' : 'black'}>
+        <Text
+          x={0}
+          y={0}
+          dy={16}
+          textAnchor="middle"
+          fontSize={12}
+          fill={isBufferOnly ? 'gray' : 'black'}
+        >
           {payload.value}
         </Text>
       </g>
@@ -188,13 +201,20 @@ export function WeatherChart({ hours }: WeatherChartProps) {
 
   const getUnit = (dataKey: string) => {
     switch (dataKey) {
-      case 'temperature': return '°F';
-      case 'windSpeed': return ' mph';
-      case 'pressure': return ' hPa';
-      case 'precipProb': return '%';
-      case 'uvIndex': return '';
-      case 'cloudCover': return '%';
-      default: return '';
+      case 'temperature':
+        return '°F';
+      case 'windSpeed':
+        return ' mph';
+      case 'pressure':
+        return ' hPa';
+      case 'precipProb':
+        return '%';
+      case 'uvIndex':
+        return '';
+      case 'cloudCover':
+        return '%';
+      default:
+        return '';
     }
   };
 
@@ -213,7 +233,7 @@ export function WeatherChart({ hours }: WeatherChartProps) {
   if (currentTargetSlot && chartData.length > 0) {
     const { main: mainRange } = currentTargetSlot;
     refLineXStart = formatHourToChartTime(mainRange.start);
-    refLineXEnd = formatHourToChartTime((mainRange.end) % 24);
+    refLineXEnd = formatHourToChartTime(mainRange.end % 24);
   }
 
   return (
@@ -238,19 +258,19 @@ export function WeatherChart({ hours }: WeatherChartProps) {
           <Tooltip content={<CustomTooltip />} />
 
           {refLineXStart && chartData.some(d => d.time === refLineXStart) && (
-            <ReferenceLine 
-              x={refLineXStart} 
-              stroke="black" 
-              strokeDasharray="3 3" 
-              strokeWidth={2} 
+            <ReferenceLine
+              x={refLineXStart}
+              stroke="black"
+              strokeDasharray="3 3"
+              strokeWidth={2}
             />
           )}
           {refLineXEnd && chartData.some(d => d.time === refLineXEnd) && (
-            <ReferenceLine 
-              x={refLineXEnd} 
-              stroke="black" 
-              strokeDasharray="3 3" 
-              strokeWidth={2} 
+            <ReferenceLine
+              x={refLineXEnd}
+              stroke="black"
+              strokeDasharray="3 3"
+              strokeWidth={2}
             />
           )}
 

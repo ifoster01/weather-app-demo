@@ -11,14 +11,20 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"; // Added Shadcn Carousel imports
+} from '@/components/ui/carousel'; // Added Shadcn Carousel imports
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
 import { ChevronLeft } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
 
 export function WeatherDashboard() {
-  const { latitude, longitude, selectedDayIndex, incrementDayIndex, decrementDayIndex } = useWeatherStore(); // Added selectedDayIndex and its modifiers
+  const {
+    latitude,
+    longitude,
+    selectedDayIndex,
+    incrementDayIndex,
+    decrementDayIndex,
+  } = useWeatherStore(); // Added selectedDayIndex and its modifiers
   const { data: weatherDataHookResult, isLoading, error } = useWeatherData();
 
   // Initial loading state based on store coordinates (pre-hook data)
@@ -43,7 +49,9 @@ export function WeatherDashboard() {
   if (error) {
     return (
       <div className="min-h-screen p-6 flex items-center justify-center max-w-2xl mx-auto">
-        <div className="text-red-500 text-center">Error loading weather data: {error.message}</div>
+        <div className="text-red-500 text-center">
+          Error loading weather data: {error.message}
+        </div>
       </div>
     );
   }
@@ -51,17 +59,26 @@ export function WeatherDashboard() {
   // Ensure we have data and the specific days we need
   // primaryDayData will now be based on selectedDayIndex
   const primaryDayData = weatherDataHookResult?.days?.[0];
-  const secondaryDayData = weatherDataHookResult?.days?.[weatherDataHookResult.days.length - 1];
+  const secondaryDayData =
+    weatherDataHookResult?.days?.[weatherDataHookResult.days.length - 1];
 
   // Helper to format date string or return a default
   const formatDate = (datetimeEpoch: number | undefined) => {
-    if (datetimeEpoch === undefined) return "Selected Day";
+    if (datetimeEpoch === undefined) return 'Selected Day';
     const date = new Date(datetimeEpoch * 1000);
-    return date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
-  const primaryDayDateString = primaryDayData ? formatDate(primaryDayData.datetimeEpoch) : "Selected Day";
-  const secondaryDayDateString = secondaryDayData ? formatDate(secondaryDayData.datetimeEpoch) : "Selected Day Next Week";
+  const primaryDayDateString = primaryDayData
+    ? formatDate(primaryDayData.datetimeEpoch)
+    : 'Selected Day';
+  const secondaryDayDateString = secondaryDayData
+    ? formatDate(secondaryDayData.datetimeEpoch)
+    : 'Selected Day Next Week';
 
   return (
     <div className="min-h-screen max-w-screen p-6">
@@ -74,7 +91,7 @@ export function WeatherDashboard() {
         <div className="mt-8">
           <Carousel
             opts={{
-              align: "start",
+              align: 'start',
               loop: false, // We handle loop prevention via store actions
             }}
             className="w-full"
@@ -82,43 +99,72 @@ export function WeatherDashboard() {
             <CarouselContent>
               {/* We will display one primary card, controlled by selectedDayIndex */}
               {primaryDayData ? (
-                <CarouselItem className="w-full md:basis-1/2"> {/* Ensure it takes up appropriate space */}
+                <CarouselItem className="w-full md:basis-1/2">
+                  {' '}
+                  {/* Ensure it takes up appropriate space */}
                   <WeatherCard dayData={primaryDayData} isPrimaryCard={true} />
                 </CarouselItem>
               ) : (
-                 <CarouselItem className="w-full md:basis-1/2">
-                    <div className="text-center p-4 h-full flex items-center justify-center">No data for {primaryDayDateString}.</div>
-                 </CarouselItem>
+                <CarouselItem className="w-full md:basis-1/2">
+                  <div className="text-center p-4 h-full flex items-center justify-center">
+                    No data for {primaryDayDateString}.
+                  </div>
+                </CarouselItem>
               )}
               {/* Optionally, you could show more cards here if needed, but the request focuses on one primary card changing */}
-               {secondaryDayData && primaryDayData?.datetimeEpoch !== secondaryDayData.datetimeEpoch ? ( // Only show if different from primary
+              {secondaryDayData &&
+              primaryDayData?.datetimeEpoch !==
+                secondaryDayData.datetimeEpoch ? ( // Only show if different from primary
                 <CarouselItem className="w-full md:basis-1/2">
-                  <WeatherCard dayData={secondaryDayData} isPrimaryCard={false} />
+                  <WeatherCard
+                    dayData={secondaryDayData}
+                    isPrimaryCard={false}
+                  />
                 </CarouselItem>
               ) : !secondaryDayData ? (
-                 <CarouselItem className="w-full md:basis-1/2">
-                   <div className="text-center p-4 h-full flex items-center justify-center">No data for {secondaryDayDateString}.</div>
-                 </CarouselItem>
+                <CarouselItem className="w-full md:basis-1/2">
+                  <div className="text-center p-4 h-full flex items-center justify-center">
+                    No data for {secondaryDayDateString}.
+                  </div>
+                </CarouselItem>
               ) : null}
             </CarouselContent>
-            <CarouselPrevious className='hidden lg:flex' onClick={decrementDayIndex} disabled={selectedDayIndex === 0} />
-            <CarouselNext className='hidden lg:flex' onClick={incrementDayIndex} disabled={selectedDayIndex === 6} />
+            <CarouselPrevious
+              className="hidden lg:flex"
+              onClick={decrementDayIndex}
+              disabled={selectedDayIndex === 0}
+            />
+            <CarouselNext
+              className="hidden lg:flex"
+              onClick={incrementDayIndex}
+              disabled={selectedDayIndex === 6}
+            />
           </Carousel>
-          <div className='lg:hidden flex justify-center mt-4 gap-2'>
-            <Button variant="ghost" onClick={decrementDayIndex} disabled={selectedDayIndex === 0}>
-              <ChevronLeft className='w-4 h-4' />
+          <div className="lg:hidden flex justify-center mt-4 gap-2">
+            <Button
+              variant="ghost"
+              onClick={decrementDayIndex}
+              disabled={selectedDayIndex === 0}
+            >
+              <ChevronLeft className="w-4 h-4" />
               Previous
             </Button>
-            <Button variant="ghost" onClick={incrementDayIndex} disabled={selectedDayIndex === 6}>
+            <Button
+              variant="ghost"
+              onClick={incrementDayIndex}
+              disabled={selectedDayIndex === 6}
+            >
               Next
-              <ChevronRight className='w-4 h-4' />
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
-        
+
         {/* Fallback display if no primary data, in case carousel structure above doesn't render it */}
         {!primaryDayData && !isLoading && !error && (
-          <div className="text-center p-4 mt-8">No weather data available for the selected day.</div>
+          <div className="text-center p-4 mt-8">
+            No weather data available for the selected day.
+          </div>
         )}
       </div>
     </div>

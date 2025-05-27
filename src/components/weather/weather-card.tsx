@@ -1,16 +1,23 @@
 'use client';
 
 import React from 'react';
-import { Sun, Cloud, CloudRain, Wind, Droplets, CloudSun, CloudMoon, Moon, CloudFog, Snowflake, Umbrella } from 'lucide-react';
+import {
+  Sun,
+  Cloud,
+  CloudRain,
+  Wind,
+  Droplets,
+  CloudSun,
+  CloudMoon,
+  Moon,
+  CloudFog,
+  Snowflake,
+  Umbrella,
+} from 'lucide-react';
 import { DayData } from '@/lib/types';
 import { WeatherChart } from './weather-chart';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { isThisWeek, isToday, subDays } from 'date-fns';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { isThisWeek, subDays } from 'date-fns';
 
 interface WeatherCardProps {
   dayData: DayData;
@@ -20,38 +27,62 @@ interface WeatherCardProps {
 const getOrdinalSuffix = (day: number): string => {
   if (day > 3 && day < 21) return 'th';
   switch (day % 10) {
-    case 1: return 'st';
-    case 2: return 'nd';
-    case 3: return 'rd';
-    default: return 'th';
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
   }
 };
 
 export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
-  const getWeatherIcon = (iconString: string | undefined, datetimeEpoch: number, isLarge: boolean = false) => {
+  const getWeatherIcon = (
+    iconString: string | undefined,
+    datetimeEpoch: number,
+    isLarge: boolean = false
+  ) => {
     const hour = new Date(datetimeEpoch * 1000).getHours();
     const isNight = hour < 6 || hour > 18;
-    const iconSize = isLarge ? "w-16 h-16 sm:w-20 sm:h-20" : "w-12 h-12";
+    const iconSize = isLarge ? 'w-16 h-16 sm:w-20 sm:h-20' : 'w-12 h-12';
 
     if (!iconString) return <Sun className={`${iconSize} text-yellow-500`} />;
     switch (iconString.toLowerCase()) {
-      case 'clear-day': return <Sun className={`${iconSize} text-yellow-500`} />;
-      case 'clear-night': return <Moon className={`${iconSize} text-blue-300`} />;
-      case 'partly-cloudy-day': return <CloudSun className={`${iconSize} text-yellow-400`} />;
-      case 'partly-cloudy-night': return <CloudMoon className={`${iconSize} text-gray-400`} />;
-      case 'cloudy': return <Cloud className={`${iconSize} text-gray-500`} />;
-      case 'rain': return <CloudRain className={`${iconSize} text-blue-500`} />;
+      case 'clear-day':
+        return <Sun className={`${iconSize} text-yellow-500`} />;
+      case 'clear-night':
+        return <Moon className={`${iconSize} text-blue-300`} />;
+      case 'partly-cloudy-day':
+        return <CloudSun className={`${iconSize} text-yellow-400`} />;
+      case 'partly-cloudy-night':
+        return <CloudMoon className={`${iconSize} text-gray-400`} />;
+      case 'cloudy':
+        return <Cloud className={`${iconSize} text-gray-500`} />;
+      case 'rain':
+        return <CloudRain className={`${iconSize} text-blue-500`} />;
       case 'showers-day':
-      case 'showers-night': return <Umbrella className={`${iconSize} text-blue-400`} />;
+      case 'showers-night':
+        return <Umbrella className={`${iconSize} text-blue-400`} />;
       case 'snow':
       case 'snow-showers-day':
-      case 'snow-showers-night': return <Snowflake className={`${iconSize} text-blue-200`} />;
+      case 'snow-showers-night':
+        return <Snowflake className={`${iconSize} text-blue-200`} />;
       case 'thunder-rain':
       case 'thunder-showers-day':
-      case 'thunder-showers-night': return <CloudRain className={`${iconSize} text-purple-500`} />;
-      case 'fog': return <CloudFog className={`${iconSize} text-gray-400`} />;
-      case 'wind': return <Wind className={`${iconSize} text-green-400`} />;
-      default: return isNight ? <CloudMoon className={`${iconSize} text-gray-400`} /> : <CloudSun className={`${iconSize} text-yellow-400`} />;
+      case 'thunder-showers-night':
+        return <CloudRain className={`${iconSize} text-purple-500`} />;
+      case 'fog':
+        return <CloudFog className={`${iconSize} text-gray-400`} />;
+      case 'wind':
+        return <Wind className={`${iconSize} text-green-400`} />;
+      default:
+        return isNight ? (
+          <CloudMoon className={`${iconSize} text-gray-400`} />
+        ) : (
+          <CloudSun className={`${iconSize} text-yellow-400`} />
+        );
     }
   };
 
@@ -75,7 +106,7 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
       dayLabel = `Following ${formattedFullDate}`;
     }
   }
-  
+
   const cardTitleColor = isPrimaryCard ? 'text-red-500' : 'text-gray-900';
 
   return (
@@ -105,15 +136,13 @@ export function WeatherCard({ dayData, isPrimaryCard }: WeatherCardProps) {
               </div>
             ) : (
               <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600">
-                <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> 
+                <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>no rain</span>
               </div>
             )}
           </div>
         </div>
-        <WeatherChart
-          hours={dayData?.hours}
-        />
+        <WeatherChart hours={dayData?.hours} />
       </CardContent>
     </Card>
   );
